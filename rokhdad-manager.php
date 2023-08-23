@@ -389,11 +389,6 @@ function events_with_tag_shortcode($atts)
                         </a></div>
                 </section>
             </div>
-            <tr>
-                <td style="text-align: center"><?php echo '<a href="' . get_permalink($event->ID) . '">' . get_the_title($event->ID) . '</a>'; ?></td>
-                <td style="text-align: center"><?php echo get_field('description', $event->ID); ?></td>
-                <td style="text-align: center"><?php echo get_field('h_start', $event->ID); ?></td>
-            </tr>
         <?php endforeach; ?>
     </table>
     <?php
