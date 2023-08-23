@@ -10,93 +10,138 @@ License: GPL2
 */
 
 
-
-function create_event_post_type() {
-    register_post_type( 'event',
+function create_event_post_type()
+{
+    register_post_type('event',
         array(
             'labels' => array(
-                'name' => __( 'رخدادها' ),
-                'singular_name' => __( 'رخداد' )
+                'name' => __('رخدادها'),
+                'singular_name' => __('رخداد')
             ),
             'public' => true,
             'has_archive' => true,
             'rewrite' => array('slug' => 'events'),
-           'supports' => array( 'title', 'editor', 'thumbnail', 'author' )
+            'supports' => array('title', 'editor', 'thumbnail', 'author')
         )
 
     );
 }
-add_action( 'init', 'create_event_post_type' );
 
-function create_event_taxonomy() {
+add_action('init', 'create_event_post_type');
+
+function create_event_taxonomy()
+{
     register_taxonomy(
         'event_category',
         'event',
         array(
-            'label' => __( 'دسته‌بندی رخدادها' ),
-            'rewrite' => array( 'slug' => 'event-category' ),
+            'label' => __('دسته‌بندی رخدادها'),
+            'rewrite' => array('slug' => 'event-category'),
             'hierarchical' => true,
         )
     );
 }
-add_action( 'init', 'create_event_taxonomy' );
 
-function events_shortcode( $atts ) {
-    $args = shortcode_atts( array(
+add_action('init', 'create_event_taxonomy');
+
+function events_shortcode($atts)
+{
+    $args = shortcode_atts(array(
         'limit' => '10',
-    ), $atts );
+    ), $atts);
 
-    $events = get_posts( array(
+    $events = get_posts(array(
         'post_type' => 'event',
         'posts_per_page' => $args['limit'],
-    ) );
+    ));
     //print_r($events);
-    if(count( $events ) == 0){echo 'رخدادی پیدا نشد';}
+    if (count($events) == 0) {
+        echo 'رخدادی پیدا نشد';
+    }
     ob_start();
     ?>
-<table>
-  <tr>
-    <th style="text-align: center" >نام رخداد</th>
-    <th style="text-align: center" >توضیحات</th>
-    <th style="text-align: center" >زمان برگزاری</th>
-  </tr>
- 
+    <table>
+        <tr>
+            <th style="text-align: center">نام رخداد</th>
+            <th style="text-align: center">توضیحات</th>
+            <th style="text-align: center">زمان برگزاری</th>
+        </tr>
 
-<?php foreach ( $events as $event ) : ?>
- <tr>
-    <td style="text-align: center" ><?php echo get_the_title( $event->ID ); ?></td>
-    <td style="text-align: center" ><?php echo get_field( 'description', $event->ID ); ?></td>
-    <td style="text-align: center" ><?php echo get_field( 'start_time', $event->ID ).' - '.get_field( 'h_start', $event->ID ); ?></td>
-</tr>
-<?php endforeach; ?>  
-</table>
-    
+
+        <?php foreach ($events as $event) : ?>
+            <tr>
+                <td style="text-align: center"><?php echo get_the_title($event->ID); ?></td>
+                <td style="text-align: center"><?php echo get_field('description', $event->ID); ?></td>
+                <td style="text-align: center"><?php echo get_field('start_time', $event->ID) . ' - ' . get_field('h_start', $event->ID); ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+
     <?php
-        return ob_get_clean();
+    return ob_get_clean();
 }
-add_shortcode( 'events', 'events_shortcode' );
 
-function events_today_shortcode( $atts ) {
-    $args = shortcode_atts( array(
+add_shortcode('events', 'events_shortcode');
+
+function events_today_shortcode($atts)
+{
+    $args = shortcode_atts(array(
         'limit' => '10',
-    ), $atts );
-    
+    ), $atts);
+
     //$today = (date( 'Y-m-d' ));
-    $today = explode(',',str_replace('رخدادهای امروز | ','',YoastSEO()->meta->for_post('122')->title))[1];
-    $today = explode(' ',$today);
+    $today = explode(',', str_replace('رخدادهای امروز | ', '', YoastSEO()->meta->for_post('122')->title))[1];
+    $today = explode(' ', $today);
     $month = $today[2];
-    switch ($month) {case 'اسفند':  $today[2]='۱۲';    break;case 'بهمن':    $today[2]='۱۱';    break;case 'دی':    $today[2]='۱۰';    break;case 'آذر':    $today[2]='۹';    break;    case 'آبان':    $today[2]='۸';    break;    case 'مهر':    $today[2]='۷';    break;    case 'شهریور':    $today[2]='۶';    break;    case 'مرداد':    $today[2]='۵';    break;    case 'تیر':    $today[2]='۴';    break;    case 'خرداد':    $today[2]='۳';    break;    case 'اردیبهشت':    $today[2]='۲';    break;    case 'فروردین':    $today[2]='۱';    break;}
-    if(strlen($today[1])== '1'){
-        $today = $today[3].'-'.$today[2].'-۰'.$today[1];
-    }else{
-        $today = $today[3].'-'.$today[2].'-'.$today[1];
+    switch ($month) {
+        case 'اسفند':
+            $today[2] = '۱۲';
+            break;
+        case 'بهمن':
+            $today[2] = '۱۱';
+            break;
+        case 'دی':
+            $today[2] = '۱۰';
+            break;
+        case 'آذر':
+            $today[2] = '۹';
+            break;
+        case 'آبان':
+            $today[2] = '۸';
+            break;
+        case 'مهر':
+            $today[2] = '۷';
+            break;
+        case 'شهریور':
+            $today[2] = '۶';
+            break;
+        case 'مرداد':
+            $today[2] = '۵';
+            break;
+        case 'تیر':
+            $today[2] = '۴';
+            break;
+        case 'خرداد':
+            $today[2] = '۳';
+            break;
+        case 'اردیبهشت':
+            $today[2] = '۲';
+            break;
+        case 'فروردین':
+            $today[2] = '۱';
+            break;
     }
-    $events = get_posts( array(
+    if (strlen($today[1]) == '1') {
+        $today = $today[3] . '-' . $today[2] . '-۰' . $today[1];
+    } else {
+        $today = $today[3] . '-' . $today[2] . '-' . $today[1];
+    }
+    $events = get_posts(array(
         'post_type' => 'event',
         'posts_per_page' => $args['limit'],
-    ) );
+    ));
 
-    if ( count( $events ) == 0 ) {
+    if (count($events) == 0) {
         echo 'رخدادی پیدا نشد';
         exit;
     }
@@ -104,82 +149,88 @@ function events_today_shortcode( $atts ) {
     ?>
     <table>
         <tr>
-            <th style="text-align: center" >نام رخداد</th>
-            <th style="text-align: center" >توضیحات</th>
-            <th style="text-align: center" >زمان برگزاری</th>
-            <th style="text-align: center" >آدرس</th>
-            <th style="text-align: center" >لینک ثبت نام</th>
+            <th style="text-align: center">نام رخداد</th>
+            <th style="text-align: center">توضیحات</th>
+            <th style="text-align: center">زمان برگزاری</th>
+            <th style="text-align: center">آدرس</th>
+            <th style="text-align: center">لینک ثبت نام</th>
         </tr>
-        <?php foreach ( $events as $event ) :
-            if(get_field( 'start_time', $event->ID ) == $today){ ?>
-            <tr>
-                <td style="text-align: center" ><?php echo get_the_title( $event->ID ); ?></td>
-                <td style="text-align: center" ><?php echo get_field( 'description', $event->ID ); ?></td>
-                <td style="text-align: center" ><?php echo 'امروز' . ' - ' . get_field( 'h_start', $event->ID ); ?></td>
-                <td style="text-align: center" ><?php echo '<a href="' . get_field( 'google_maps', $event->ID ) . '">' . get_field( 'address', $event->ID ) . '</a>'; ?></td>
-                <td style="text-align: center" ><?php echo '<a href="' . get_field( 'signup_link', $event->ID ) . '">ثبت‌نام</a>'; ?></td>
-            </tr>
-        <?php } endforeach; ?>  
+        <?php foreach ($events as $event) :
+            if (get_field('start_time', $event->ID) == $today) { ?>
+                <tr>
+                    <td style="text-align: center"><?php echo get_the_title($event->ID); ?></td>
+                    <td style="text-align: center"><?php echo get_field('description', $event->ID); ?></td>
+                    <td style="text-align: center"><?php echo 'امروز' . ' - ' . get_field('h_start', $event->ID); ?></td>
+                    <td style="text-align: center"><?php echo '<a href="' . get_field('google_maps', $event->ID) . '">' . get_field('address', $event->ID) . '</a>'; ?></td>
+                    <td style="text-align: center"><?php echo '<a href="' . get_field('signup_link', $event->ID) . '">ثبت‌نام</a>'; ?></td>
+                </tr>
+            <?php } endforeach; ?>
     </table>
     <?php
     return ob_get_clean();
 }
-add_shortcode( 'events_today', 'events_today_shortcode' );
 
-function events_small_shortcode( $atts ) {
-    $args = shortcode_atts( array(
+add_shortcode('events_today', 'events_today_shortcode');
+
+function events_small_shortcode($atts)
+{
+    $args = shortcode_atts(array(
         'limit' => '10',
-    ), $atts );
+    ), $atts);
 
-    $events = get_posts( array(
+    $events = get_posts(array(
         'post_type' => 'event',
         'posts_per_page' => $args['limit'],
-    ) );
+    ));
     //print_r($events);
-    if(count( $events ) == 0){echo 'رخدادی پیدا نشد';}
+    if (count($events) == 0) {
+        echo 'رخدادی پیدا نشد';
+    }
     ob_start();
     ?>
-<table style="text-align: center">
-  <tr>
-    <th style="text-align: center">نام رخداد</th>
-    <th style="text-align: center">زمان برگزاری</th>
-  </tr>
- 
+    <table style="text-align: center">
+        <tr>
+            <th style="text-align: center">نام رخداد</th>
+            <th style="text-align: center">زمان برگزاری</th>
+        </tr>
 
-<?php foreach ( $events as $event ) : ?>
- <tr>
-    <td style="text-align: center"><?php echo get_the_title( $event->ID ); ?></td>
-    <td style="text-align: center"><?php echo get_field( 'start_time', $event->ID ).' - '.get_field( 'h_start', $event->ID ); ?></td>
-</tr>
-<?php endforeach; ?>  
-</table>
-    
+
+        <?php foreach ($events as $event) : ?>
+            <tr>
+                <td style="text-align: center"><?php echo get_the_title($event->ID); ?></td>
+                <td style="text-align: center"><?php echo get_field('start_time', $event->ID) . ' - ' . get_field('h_start', $event->ID); ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+
     <?php
-        return ob_get_clean();
+    return ob_get_clean();
 }
-add_shortcode( 'events_small', 'events_small_shortcode' );
 
-function events_today_small_shortcode( $atts ) {
-$args = shortcode_atts( array(
+add_shortcode('events_small', 'events_small_shortcode');
+
+function events_today_small_shortcode($atts)
+{
+    $args = shortcode_atts(array(
         'limit' => '10',
-    ), $atts );
-    
+    ), $atts);
+
     //$today = (date( 'Y-m-d' ));
     //$today = explode(',',str_replace('رخدادهای امروز | ','',YoastSEO()->meta->for_post('122')->title))[1];
     //$today = explode(' ',$today);
     //$month = $today[2];
     //switch ($month) {case 'اسفند':  $today[2]='۱۲';    break;case 'بهمن':    $today[2]='۱۱';    break;case 'دی':    $today[2]='۱۰';    break;case 'آذر':    $today[2]='۹';    break;    case 'آبان':    $today[2]='۸';    break;    case 'مهر':    $today[2]='۷';    break;    case 'شهریور':    $today[2]='۶';    break;    case 'مرداد':    $today[2]='۵';    break;    case 'تیر':    $today[2]='۴';    break;    case 'خرداد':    $today[2]='۳';    break;    case 'اردیبهشت':    $today[2]='۲';    break;    case 'فروردین':    $today[2]='۱';    break;}
-   // if(strlen($today[1])== '1'){
-   //     $today = $today[3].'-'.$today[2].'-۰'.$today[1];
-   // }else{
-   //     $today = $today[3].'-'.$today[2].'-'.$today[1];
-   // }
-    $events = get_posts( array(
+    // if(strlen($today[1])== '1'){
+    //     $today = $today[3].'-'.$today[2].'-۰'.$today[1];
+    // }else{
+    //     $today = $today[3].'-'.$today[2].'-'.$today[1];
+    // }
+    $events = get_posts(array(
         'post_type' => 'event',
         'posts_per_page' => $args['limit'],
-    ) );
+    ));
 
-    if ( count( $events ) == 0 ) {
+    if (count($events) == 0) {
         echo 'رخدادی پیدا نشد';
         exit;
     }
@@ -187,29 +238,33 @@ $args = shortcode_atts( array(
     ?>
     <table>
         <tr>
-            <th style="text-align: center" >نام رخداد</th>
-            <th style="text-align: center" >زمان برگزاری</th>
+            <th style="text-align: center">نام رخداد</th>
+            <th style="text-align: center">زمان برگزاری</th>
         </tr>
-        <?php foreach ( $events as $event ) :
-            if(get_field( 'start_time', $event->ID ) == $today){ ?>
-            <tr>
-                <td style="text-align: center" ><?php echo get_the_title( $event->ID ); ?></td>
-                <td style="text-align: center" ><?php echo get_field( 'h_start', $event->ID ); ?></td>
-            </tr>
-        <?php } endforeach; ?>  
+        <?php foreach ($events as $event) :
+            if (get_field('start_time', $event->ID) == $today) { ?>
+                <tr>
+                    <td style="text-align: center"><?php echo get_the_title($event->ID); ?></td>
+                    <td style="text-align: center"><?php echo get_field('h_start', $event->ID); ?></td>
+                </tr>
+            <?php } endforeach; ?>
     </table>
     <?php
     return ob_get_clean();
 }
-add_shortcode( 'events_today_small', 'events_today_small_shortcode' );
+
+add_shortcode('events_today_small', 'events_today_small_shortcode');
 
 
-function enable_tags_for_custom_post_type() {
+function enable_tags_for_custom_post_type()
+{
     register_taxonomy_for_object_type('post_tag', 'event'); // your_custom_post_type را با نام پست تایپ موردنظرتان جایگزین کنید
 }
+
 add_action('init', 'enable_tags_for_custom_post_type');
 
-function event_details_shortcode() {
+function event_details_shortcode()
+{
     global $post;
 
     if (get_post_type() !== 'event') {
@@ -240,7 +295,8 @@ function event_details_shortcode() {
 add_shortcode('event_details', 'event_details_shortcode');
 
 
-function events_with_tag_shortcode($atts) {
+function events_with_tag_shortcode($atts)
+{
     $atts = shortcode_atts(array(
         'tag' => '',
         'limit' => '10',
@@ -273,28 +329,84 @@ function events_with_tag_shortcode($atts) {
     ?>
     <table>
         <tr>
-            <th style="text-align: center" >نام رخداد</th>
-            <th style="text-align: center" >توضیحات</th>
-            <th style="text-align: center" >زمان برگزاری</th>
+            <th style="text-align: center">نام رخداد</th>
+            <th style="text-align: center">توضیحات</th>
+            <th style="text-align: center">زمان برگزاری</th>
         </tr>
-        <?php foreach ( $events as $event ) :
+        <?php foreach ($events as $event) :
             ?>
+            <div>
+                <section direction="vertical" data-test="card-template" class="sc-kkGfuU QGrUX sc-jDwBTQ WyaZW"><a
+                            href="<?= get_permalink($event->ID); ?>">
+                        <div style="display: inline-block; max-width: 100%; overflow: hidden; position: relative; box-sizing: border-box; margin: 0px;">
+                            <div style="box-sizing: border-box; display: block; max-width: 100%;"><img alt=""
+                                                                                                       aria-hidden="true"
+                                                                                                       src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjcwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiLz4="
+                                                                                                       style="max-width: 100%; display: block; margin: 0px; border: none; padding: 0px;">
+                            </div>
+                            <img alt="<?= get_the_title($event->ID); ?>"
+                                 src="/_next/image?url=https%3A%2F%2Fevand.com%2Fimages%2Fdefaults%2Fevents-cover%2Fcover-1.jpg&amp;w=640&amp;q=100"
+                                 decoding="async" data-nimg="intrinsic" class="event-cover"
+                                 srcset="/_next/image?url=https%3A%2F%2Fevand.com%2Fimages%2Fdefaults%2Fevents-cover%2Fcover-1.jpg&amp;w=384&amp;q=100 1x, /_next/image?url=https%3A%2F%2Fevand.com%2Fimages%2Fdefaults%2Fevents-cover%2Fcover-1.jpg&amp;w=640&amp;q=100 2x"
+                                 style="position: absolute; inset: 0px; box-sizing: border-box; padding: 0px; border: none; margin: auto; display: block; width: 0px; height: 0px; min-width: 100%; max-width: 100%; min-height: 100%; max-height: 100%;">
+                            <noscript></noscript>
+                        </div>
+                    </a>
+                    <div data-test="vertical-content" class="sc-iRbamj bQILq">
+                        <div>
+                            <div data-test="vertical-date-bookmark" class="sc-brqgnP fMMPiY">
+                                <div class="sc-cMljjf fImDOl">
+                                    <div class="sc-dVhcbM hIORRL"><i
+                                                class="sc-kAzzGY gvqONd jupiter-icon new-icon-colleague "
+                                                data-test="icon"></i> ویژه
+                                    </div>
+                                    <span data-test="show-date" class="sc-gqjmRU jEzUjf"><?= get_field('h_start', $event->ID); ?></span>
+                                </div>
+                                <i class="sc-kAzzGY boTNUi jupiter-icon new-icon-bookmark-border sc-jAaTju hJrkOo"
+                                   data-test="icon"></i></div>
+                            <a href="<?= get_the_title($event->ID); ?>">
+                                <h2 data-test="h2-tag" class="sc-EHOje hlASIM sc-jlyJG dRsEp"><?= get_the_title($event->ID); ?></h2></a>
+                            <ul class="sc-hSdWYo iDrtIC sc-gipzik jtWVzg">
+                                <li class="sc-eHgmQL jMRxID">
+                                    <div class="sc-cvbbAY jnyMzp"><i
+                                                class="sc-kAzzGY dbwqav jupiter-icon new-icon-place "
+                                                data-test="icon"></i><span data-test="span" class="sc-gqjmRU jEzUjf">رخداد آنلاین</span>
+                                    </div>
+                                </li>
+                                <li class="sc-eHgmQL jMRxID">
+                                    <div class="sc-cvbbAY jnyMzp"><i
+                                                class="sc-kAzzGY dbwqav jupiter-icon new-icon-ticket "
+                                                data-test="icon"></i><span data-test="span" class="sc-gqjmRU jEzUjf">مبلغ بلیت</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="/linke bargoar">
+                            <div data-test="titled-avatar" class="sc-dxgOiQ gSsnhN"><img
+                                        src="https://evand.com/images/defaults/user-avatar.webp" alt="آواتار"
+                                        data-test="avatar" class="sc-cSHVUG beWtUN">
+                                <span data-test="span" class="sc-gqjmRU eizCON sc-eNQAEJ fysZRU">SRC SUMS</span></div>
+                        </a></div>
+                </section>
+            </div>
             <tr>
-                <td style="text-align: center" ><?php echo '<a href="' . get_permalink($event->ID) . '">'.get_the_title( $event->ID ).'</a>'; ?></td>
-                <td style="text-align: center" ><?php echo get_field( 'description', $event->ID ); ?></td>
-                <td style="text-align: center" ><?php echo  get_field( 'h_start', $event->ID ); ?></td>
+                <td style="text-align: center"><?php echo '<a href="' . get_permalink($event->ID) . '">' . get_the_title($event->ID) . '</a>'; ?></td>
+                <td style="text-align: center"><?php echo get_field('description', $event->ID); ?></td>
+                <td style="text-align: center"><?php echo get_field('h_start', $event->ID); ?></td>
             </tr>
-        <?php endforeach; ?>  
+        <?php endforeach; ?>
     </table>
     <?php
     return ob_get_clean();
 }
+
 add_shortcode('events_with_tag', 'events_with_tag_shortcode');
 
 // Define your custom API endpoint
 add_action('rest_api_init', 'register_custom_event_api');
 
-function register_custom_event_api() {
+function register_custom_event_api()
+{
     register_rest_route('event/v1', '/add_event', array(
         'methods' => 'POST',
         'callback' => 'add_event_data',
@@ -305,7 +417,8 @@ function register_custom_event_api() {
 }
 
 // Callback function to handle the API request
-function add_event_data(WP_REST_Request $request) {
+function add_event_data(WP_REST_Request $request)
+{
     $post_title = $request->get_param('title');
     $post_content = $request->get_param('content');
     $start_time = $request->get_param('start_time');
@@ -335,7 +448,8 @@ function add_event_data(WP_REST_Request $request) {
 }
 
 // Add Schema Markup for Events
-function add_event_schema_markup() {
+function add_event_schema_markup()
+{
     if (is_singular('event')) {
         global $post;
 
@@ -390,4 +504,5 @@ function add_event_schema_markup() {
         echo '<script type="application/ld+json">' . json_encode($schema_markup) . '</script>';
     }
 }
+
 add_action('wp_head', 'add_event_schema_markup');
